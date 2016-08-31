@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
-from flask import Flask
+from flask import Flask, render_template
 from config import DevConfig
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import func
