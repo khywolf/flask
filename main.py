@@ -105,8 +105,8 @@ def home(page=1):
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     tags = post.tags
-    comments = post.comments.order_by(comment.date.desc()).all()
-    recent, top_tags = sidebar_date()
+    comments = post.comments.order_by(Comment.date.desc()).all()
+    recent, top_tags = sidebar_data()
 
     return render_template(
         'post.html',
@@ -147,5 +147,3 @@ def user(username):
 
 if __name__ == '__main__':
     app.run()
-    pass
-####
