@@ -1,0 +1,51 @@
+{% macro render_pagination(pagination, endpoint) %}
+    <nav>
+        <ul class="pagination">
+            <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
+                <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev().page, **kwargs) }}{% else %}#{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    {% if page != pagination.page %}
+                        <li><a href="{{ url_for(endpoint, page=page, **kwargs) }}">{{ page }}</a></li>
+                    {% else %}
+                        <li><a href="">{{ page }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li><a>...</a></li>
+                {% endif %}
+            {% endfor %}
+            <li{% if not pagination.has_next %} class="disabled"{% endif %}>
+                <a href="{{ url_for('.home', page=pagination.next().page) }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endmacro %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE-edge">
+        <meta name="viewport" content="width=device-with, initial-scale=1">
+        <title>{% block title %}Blog{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+</head>
+<body>
+  <div class="container">
+      <div class="jumbotron">
+          <h1><a href="{{ url_for('.home')  }}">My Blog</a></h1>
+          <p>Welcome to the blog!</p>
+      </div>
+      {% block body %}
+      {% endblock %}
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <!--<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>-->
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+</html>
