@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+import datetime
 from flask import Flask, render_template
 from config import DevConfig
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import func
+from flask_wtf import Form
+from wtforms import StringField, TextAreaField
+from wtforms.validators import DataRequired, Length
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
@@ -74,6 +78,10 @@ class Tag(db.Model):
     def __repr__(self):
         return "<Tag '{}'>".format(self.title)
 
+class CommentForm(Form):
+    name = StringField('name', validators=[DataRequired(), Length(max=255)])
+    text = TextAreaField(u'Comment', validators=[DataRequired()])
+
 def sidebar_data():
     recent = Post.query.order_by(
          Post.publish_date.desc()
@@ -102,8 +110,18 @@ def home(page=1):
         page=page
     )
 
-@app.route('/post/<int:post_id>')
+@app.route('/post/<int:post_id>', methods=('GET', 'POST'))
 def post(post_id):
+    form = CommentForm()
+    if form.validate_on_submit():
+        new_comment = Comment()
+        new_comment.name = form.name.data
+        new_comment.text = form.text.data
+        new_comment.post_id = post_id
+        new_comment.date = datetime.datetime.now()
+        db.session.add(new_comment)
+        db.session.commit()
+
     post = Post.query.get_or_404(post_id)
     tags = post.tags
     comments = post.comments.order_by(Comment.date.desc()).all()
@@ -115,7 +133,8 @@ def post(post_id):
         tags=tags,
         comments=comments,
         recent=recent,
-        top_tags=top_tags
+        top_tags=top_tags,
+        form = form
     )
 
 @app.route('/tag/<string:tag_name>')
