@@ -2,7 +2,9 @@
 #-*- coding:utf-8 -*-
 
 class Config(object):
-    pass
+    SECRET_KEY = 'key here'
+    RECAPTCHA_PUBLIC_KEY = '6LeIByoTAAAAABLjathhgXR6lrcw25Yhmi7Ki7bK'
+    RECAPTCHA_PRIVATE_KEY = '6LeIByoTAAAAAEVV9B3WfLN0qhdQGZqUsxYOz6eg'
 
 class ProdConfig(Config):
     pass
