@@ -12,6 +12,7 @@ class CommentForm(Form):
 class LoginForm(Form):
     username = StringField('username', [DataRequired(), Length(max=255)])
     password = PasswordField('password', [DataRequired()])
+    remember = BooleanField("Remember me")
 
     def validate(self):
         check_validate = super(LoginForm, self).validate()
@@ -55,3 +56,6 @@ class RegisterForm(Form):
 class PostForm(Form):
     title = StringField('title', [DataRequired(), Length(max=255)])
     text = TextAreaField('Context', DataRequired())
+
+class OpenIDForm(Form):
+    openid = StringField('OpenID URL', [DataRequired(), URL()])

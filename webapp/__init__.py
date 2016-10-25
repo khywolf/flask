@@ -6,13 +6,17 @@ from config import DevConfig
 
 from models import db
 from controllers.blog import blog_blueprint
-from webapp.extensions import bcrypt
+from webapp.extensions import bcrypt, oid, login_manager, principals
+from flask.ext.principal import identity_loaded, UserNeed, RoleNeed
 
 def create_app(object_name):
     app = Flask(__name__)
     app.config.from_object(DevConfig)
     db.init_app(app)
     bcrypt.init_app(app)
+    oid.init_app(app)
+    login_manager.init_app(app)
+    principals.init_app(app)
 
     @app.route('/')
     def index():
