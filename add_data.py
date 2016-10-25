@@ -22,4 +22,3 @@ for i in xrange(100):
     db.session.add(new_post)
 
 db.session.commit()
-####
