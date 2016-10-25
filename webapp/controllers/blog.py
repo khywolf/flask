@@ -8,6 +8,7 @@ from webapp.forms import CommentForm, PostForm
 
 from webapp.models import db, Post, Tag, Comment, User, tags
 from webapp.forms import CommentForm
+from webapp.extensions import poster_permission
 
 blog_blueprint = Blueprint(
     'blog',
@@ -114,19 +115,26 @@ def new_post():
     return render_template('new.html', form=form)
 
 @blog_blueprint.route('/edid/<init:id>', methods=['GET', 'POST'])
+@login_required
+@poster_permission.require(http_exception=403)
 def edit_post(id):
     post = Post.query.get_or_404(id)
-    form = PostForm()
+    permssion = Permssion(UserNeed(post.user.id))
 
-    if form.validate_on_submit():
-        post.title = form.title.data
-        post.text = form.text.data
-        post.publish_date = datetime.datetime.now()
+    if permssion.can() or admin_permssion.can():
+        form = PostForm()
 
-        db.session.add(post)
-        db.session.commit()
+        if form.validate_on_submit():
+            post.title = form.title.data
+            post.text = form.text.data
+            post.publish_date = datetime.datetime.now()
 
-        return redirect(url_for('.post',post_id=post.id))
+            db.session.add(post)
+            db.session.commit()
 
-    form.text.data = post.text
-    return render_template('edit.html', form=form, post=post)
+            return redirect(url_for('.post',post_id=post.id))
+
+        form.text.data = post.text
+        return render_template('edit.html', form=form, post=post)
+
+    abort(403)

@@ -6,6 +6,11 @@ from webapp.models import db, Post, Tag, Comment, User, tags
 from webapp.extensions import oid
 from flask.ext.login import login_user, logout_user
 from flask.ext.login import login_required
+from flask.ext.principal import (
+    Identity,
+    AnonymousIdentity,
+    identity_changed
+)
 
 main_blueprint = Blueprint(
     'main',
@@ -30,6 +35,11 @@ def login():
         user = User.query.filter_by(username=form.username.data).one()
         login_user(user, remember=form.remember.data)
 
+        identity_changed.send(
+            current_app._get_current_object(),
+            identity=Identity(user.id)
+        )
+
         flash("You have been logged in.", category="success")
         return redirect(url_for('blog.home'))
 
@@ -41,6 +51,11 @@ def login():
 
 @main_blueprint.route('/logout', methods=['GET', 'POST'])
 def logout():
+    logout_user()
+    identity_changed.send(
+        current_app._get_current_object(),
+        identity=AnonymousIdentity()
+    )
     flash("You have been logged out.", category="success")
     return redirect(url_for('.home'))
 
