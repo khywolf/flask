@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
-from flask_wtf import Form
+from flask_wtf import Form, RecaptchaField
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Length, EqualTo, URL
+from webapp.models import User
 
 class CommentForm(Form):
     name = StringField('name', validators=[DataRequired(), Length(max=255)])
@@ -26,7 +27,7 @@ class LoginForm(Form):
             self.username.errors.append('Invalid username or password')
             return False
 
-        if not self.user.check_password(self.password.data):
+        if not user.check_password(self.password.data):
             self.username.errors.append('invalid username or password')
             return False
 
@@ -37,8 +38,6 @@ class RegisterForm(Form):
     password = PasswordField('Password', [DataRequired(), Length(min=8)])
     confirm = PasswordField('Confirm Password', [DataRequired(), EqualTo('password')])
 
-    recaptcha = RecaptchaField()
-        
     def validate(self):
         check_validate = super(RegisterForm, self).validate()
 

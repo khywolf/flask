@@ -36,24 +36,6 @@
                 </div>
                 <input class="btn btn-primary" type="submit" value="Login">
             </form>
-            <hr>
-            <h2 class="text-center">Register With OpenID</h2>
-            <form method="POST" action="{{ url_for('.register') }}">
-                {{ openid_form.hidden_tag() }}\
-                {% if openid_form.openid.errors %}
-                    {% for e in openid_form.openid.errors %}
-                        <p class="help-block">{{ e }}</p>
-                    {% endfor %}
-                {% endif %}
-                {{ openid_form.openid(class_='form-control') }}
-                <input class="btn btn-primary" type="submit" value="Register">
-            </form>
-
-            <h2 class="text-center">Register With Facebook</h2>
-            <a href="{{ url_for('.facebook_login') }}">Login</a>
-
-            <h2 class="text-center">Register With Twitter</h2>
-            <a href="{{ url_for('.twitter_login') }}">Login</a>
         </div>
         <div class="col-md-4"></div>
     </div>

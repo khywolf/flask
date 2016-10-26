@@ -4,8 +4,8 @@
 import datetime
 from sqlalchemy import func
 from flask import render_template, Blueprint
+from flask.ext.login import login_required, current_user
 from webapp.forms import CommentForm, PostForm
-
 from webapp.models import db, Post, Tag, Comment, User, tags
 from webapp.forms import CommentForm
 from webapp.extensions import poster_permission
@@ -114,7 +114,7 @@ def new_post():
 
     return render_template('new.html', form=form)
 
-@blog_blueprint.route('/edid/<init:id>', methods=['GET', 'POST'])
+@blog_blueprint.route('/edid/<int:id>', methods=['GET', 'POST'])
 @login_required
 @poster_permission.require(http_exception=403)
 def edit_post(id):

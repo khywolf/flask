@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE-edge">
         <meta name="viewport" content="width=device-with, initial-scale=1">
-        <title>{% block title %}Blog{% endblock %}</title>
+        <title>{% block title %}Home{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 </head>
 <body>
@@ -13,7 +13,7 @@
             <h1><a href="{{ url_for('blog.home')  }}">My Blog</a></h1>
             <p>Welcome to the blog!</p>
         </div>
-        {% with messages = get_flashed_messages(with_category=true) %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     <div class="alert alert-{{ category }} alert-dismissible" role="alert">

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
-from flask import render_template, Blueprint
-from webapp.forms import LoginForm, RegisterForm
+from flask import render_template, Blueprint, current_app, redirect, url_for, request, flash, session
+from webapp.forms import LoginForm, RegisterForm, OpenIDForm
 from webapp.models import db, Post, Tag, Comment, User, tags
 from webapp.extensions import oid
 from flask.ext.login import login_user, logout_user
@@ -15,21 +15,21 @@ from flask.ext.principal import (
 main_blueprint = Blueprint(
     'main',
     __name__,
-    template_folder='../template/main'
+    template_folder='../templates/main'
 )
 
 @main_blueprint.route('/')
 def index():
     return redirect(url_for('blog.main'))
 
-@main_blueprint.route('/login', methods['GET', 'POST'])
+@main_blueprint.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
 def login():
     form = LoginForm()
     openid_form = OpenIDForm()
 
-    if openid_form.validate_on_submit():
-        return oid.try_login(openid_form.openid.data, ask_for['nickname', 'email'], ask_for_optional=['fullname'])
+    #if openid_form.validate_on_submit():
+    #   return oid.try_login(openid_form.openid.data, ask_for['nickname', 'email'], ask_for_optional=['fullname'])
 
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).one()
@@ -63,14 +63,10 @@ def logout():
 @oid.loginhandler
 def register():
     form = RegisterForm()
-    openid_form = OpenIDForm()
-
-    if openid_form.validate_on_submit():
-        return oid.try_login(openid_form.openid.data, ask_for=['nickname', 'email'], ask_for_optional=['fullname'])
 
     if form.validate_on_submit():
-        new_user = User()
-        new_user.username = form.username.data
+        new_user = User(form.username.data)
+        #new_user.username = form.username.data
         new_user.set_password(form.password.data)
 
         db.session.add(new_user)
@@ -79,14 +75,4 @@ def register():
         flash("Your user has been created, please login.", category="success")
         return redirect(url_for('.login'))
 
-    openid_errors = oid.fetch_error()
-    if openid_errors:
-        flash(openid_errors, category="danger")
-
-    return render_template('reister.html', form=form, openid_form=openid_form)
-
-def logout():
-    logout_user()
-
-    flash("You have been logged out.", category="success")
-    return redirect(url_for('.login'))
+    return render_template('register.html', form=form)
