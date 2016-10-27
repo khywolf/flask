@@ -28,9 +28,6 @@ def login():
     form = LoginForm()
     openid_form = OpenIDForm()
 
-    #if openid_form.validate_on_submit():
-    #   return oid.try_login(openid_form.openid.data, ask_for['nickname', 'email'], ask_for_optional=['fullname'])
-
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).one()
         login_user(user, remember=form.remember.data)
@@ -41,11 +38,7 @@ def login():
         )
 
         flash("You have been logged in.", category="success")
-        return redirect(url_for('blog.home'))
-
-    openid_errors = oid.fetch_error()
-    if openid_errors:
-        flash(openid_errors, category="danger")
+        return redirect(url_for('blog.user', username=form.username.data))
 
     return render_template('login.html', form=form, openid_form=openid_form)
 
@@ -57,7 +50,7 @@ def logout():
         identity=AnonymousIdentity()
     )
     flash("You have been logged out.", category="success")
-    return redirect(url_for('.home'))
+    return redirect(url_for('.login'))
 
 @main_blueprint.route('/register', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -66,7 +59,6 @@ def register():
 
     if form.validate_on_submit():
         new_user = User(form.username.data)
-        #new_user.username = form.username.data
         new_user.set_password(form.password.data)
 
         db.session.add(new_user)

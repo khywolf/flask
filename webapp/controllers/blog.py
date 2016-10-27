@@ -3,11 +3,11 @@
 
 import datetime
 from sqlalchemy import func
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, url_for, redirect
 from flask.ext.login import login_required, current_user
-from webapp.forms import CommentForm, PostForm
+from flask.ext.principal import Permission, UserNeed
 from webapp.models import db, Post, Tag, Comment, User, tags
-from webapp.forms import CommentForm
+from webapp.forms import CommentForm, PostForm
 from webapp.extensions import poster_permission
 
 blog_blueprint = Blueprint(
@@ -101,13 +101,16 @@ def user(username):
     )
 
 @blog_blueprint.route('/new', methods=['POST', 'GET'])
+@login_required
+@poster_permission.require(http_exception=403)
 def new_post():
-    form = PostForm
+    form = PostForm()
 
     if form.validate_on_submit():
         new_post = Post(form.title.data)
         new_post.text = form.text.data
         new_post.publish_date = datetime.datetime.now()
+        new_post.user = User.query.filter_by(username=current_user.username).one()
 
         db.session.add(new_post)
         db.session.commit()
@@ -119,7 +122,7 @@ def new_post():
 @poster_permission.require(http_exception=403)
 def edit_post(id):
     post = Post.query.get_or_404(id)
-    permssion = Permssion(UserNeed(post.user.id))
+    permssion = Permission(UserNeed(post.user.id))
 
     if permssion.can() or admin_permssion.can():
         form = PostForm()

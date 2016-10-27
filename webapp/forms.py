@@ -54,7 +54,7 @@ class RegisterForm(Form):
 
 class PostForm(Form):
     title = StringField('title', [DataRequired(), Length(max=255)])
-    text = TextAreaField('Context', DataRequired())
+    text = TextAreaField('Context', [DataRequired()])
 
 class OpenIDForm(Form):
     openid = StringField('OpenID URL', [DataRequired(), URL()])
