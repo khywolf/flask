@@ -1,8 +1,11 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import AnonymousUserMixin
+from flask.ext.mongoengine import MongoEngine
 from webapp.extensions import bcrypt
+import datetime
 
 db = SQLAlchemy()
+mongo = MongoEngine()
 
 tags = db.Table(
     'post_tags',
@@ -117,3 +120,13 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role {}>'.format(self.name)
+
+class Post(mongo.Document):
+    title = mongo.StringField(required=True)
+    text = mongo.StringField()
+    publish_date = mongo.DateTimeField(
+        default=datetime.datetime.now()
+    )
+
+    def __repr__(self):
+        return "<Post '{}'>".format(self.title)

@@ -14,3 +14,8 @@ class DevConfig(Config):
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:123456@172.16.1.129:3306/flask"
     AQLALCHEMY_ECHO = True
     SECRET_KEY = '743acb049b060a523d2fbf6155c2043d'
+    MONGODB_SETTINGS = {
+        'db': 'local',
+        'host': '172.16.1.129',
+        'port': 27017
+    }

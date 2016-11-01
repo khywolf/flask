@@ -6,7 +6,7 @@ from config import DevConfig
 from flask.ext.login import current_user
 from flask.ext.principal import identity_loaded, UserNeed, RoleNeed
 
-from models import db
+from models import db, mongo
 from controllers.blog import blog_blueprint
 from controllers.main import main_blueprint
 from webapp.extensions import bcrypt, oid, login_manager, principals
@@ -16,6 +16,7 @@ def create_app(object_name):
     app.config.from_object(object_name)
 
     db.init_app(app)
+    mongo.init_app(app)
     bcrypt.init_app(app)
     oid.init_app(app)
     login_manager.init_app(app)
