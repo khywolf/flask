@@ -3,6 +3,7 @@ from flask.ext.login import AnonymousUserMixin
 from flask.ext.mongoengine import MongoEngine
 from webapp.extensions import bcrypt
 import datetime
+available_roles = ('admin', 'poster', 'default')
 
 db = SQLAlchemy()
 mongo = MongoEngine()
@@ -121,12 +122,63 @@ class Role(db.Model):
     def __repr__(self):
         return '<Role {}>'.format(self.name)
 
-class Post(mongo.Document):
+###mongo
+
+class Userm(mongo.Document):
+    username = mongo.StringField(required=True)
+    password = mongo.StringField(required=True)
+    roles = mongo.ListField(mongo.StringField(choices=available_roles))
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
+
+class Commentm(mongo.EmbeddedDocument):
+    name = mongo.StringField(required=True)
+    text = mongo.StringField(required=True)
+    date = mongo.DateTimeField(default=datetime.datetime.now())
+
+    def __repr__(self):
+        return "<Comment '{}'>".format(self.text[:15])
+
+class Postm(mongo.Document):
     title = mongo.StringField(required=True)
-    text = mongo.StringField()
-    publish_date = mongo.DateTimeField(
-        default=datetime.datetime.now()
-    )
+    publish_date = mongo.DateTimeField(default=datetime.datetime.now())
+    user = mongo.ReferenceField(Userm)
+    comments = mongo.ListField(mongo.EmbeddedDocumentField(Commentm))
+    tags = mongo.ListField(mongo.StringField())
 
     def __repr__(self):
         return "<Post '{}'>".format(self.title)
+
+    meta = {
+        'allow_inheritance': True
+    }
+
+class BlogPost(Postm):
+    text = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "blog"
+
+class VideoPost(Postm):
+    video_object = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "video"
+
+class ImagePost(Postm):
+    image_url = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "image"
+
+class QuotePost(Postm):
+    quote = mongo.StringField(required=True)
+    author = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "quote"
