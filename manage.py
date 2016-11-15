@@ -18,7 +18,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.shell
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Post=Post, Comment=Comment, Tag=Tag, Userm=Userm)
+    return dict(app=app, db=db, User=User, Post=Post, Comment=Comment, Tag=Tag, Userm=Userm, Commentm=Commentm, Postm=Postm, BlogPost=BlogPost, VideoPost=VideoPost, ImagePost=ImagePost, QuotePost=QuotePost)
 
 if __name__ == "__main__":
     manager.run()
