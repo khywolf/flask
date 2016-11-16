@@ -142,6 +142,7 @@ class Commentm(mongo.EmbeddedDocument):
 
 class Postm(mongo.Document):
     title = mongo.StringField(required=True)
+    text = mongo.StringField()
     publish_date = mongo.DateTimeField(default=datetime.datetime.now())
     user = mongo.ReferenceField(Userm)
     comments = mongo.ListField(mongo.EmbeddedDocumentField(Commentm))
