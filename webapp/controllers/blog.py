@@ -107,13 +107,23 @@ def new_post():
     form = PostForm()
 
     if form.validate_on_submit():
-        new_post = Post(form.title.data)
-        new_post.text = form.text.data
-        new_post.publish_date = datetime.datetime.now()
-        new_post.user = User.query.filter_by(username=current_user.username).one()
+        if form.type.data == "blog":
+            new_post = BlogPost()
+            new_post.text = form.text.data
+        elif form.type.data == "image":
+            new_post = ImagePost()
+            new_post.image_url = form.image.data
+        elif form.type.data == "video":
+            new_post = VideoPost()
+            new_post.video_object = form.video.data
+        elif form.type.data == "quote":
+            new_post = QuotePost()
+            new_post.text = form.text.data
+            new_post.author = form.author.data
 
-        db.session.add(new_post)
-        db.session.commit()
+        new_post.title = form.title.data
+        new_post.user = User.objects(username=current_user.username).one()
+        new_post.save()
 
     return render_template('new.html', form=form)
 

@@ -2,7 +2,7 @@
 #-*- coding:utf-8 -*-
 
 from flask_wtf import Form, RecaptchaField
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Length, EqualTo, URL
 from webapp.models import User
 
@@ -54,7 +54,16 @@ class RegisterForm(Form):
 
 class PostForm(Form):
     title = StringField('title', [DataRequired(), Length(max=255)])
-    text = TextAreaField('Context', [DataRequired()])
+    type = SelectField('Post Type', choices=[
+        ('blog', 'Blog Post'),
+        ('image', 'Image'),
+        ('video', 'Video'),
+        ('quote', 'Quote')
+    ])
+    text = TextAreaField('Content')
+    image = StringField('Image URL', [URL(), Length(max=255)])
+    video = StringField('Video Code', [Length(max=255)])
+    author = StringField('Author', [Length(max=255)])
 
 class OpenIDForm(Form):
     openid = StringField('OpenID URL', [DataRequired(), URL()])

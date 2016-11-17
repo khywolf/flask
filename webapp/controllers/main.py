@@ -2,7 +2,7 @@
 #-*- coding:utf-8 -*-
 from flask import render_template, Blueprint, current_app, redirect, url_for, request, flash, session
 from webapp.forms import LoginForm, RegisterForm, OpenIDForm
-from webapp.models import db, Post, Tag, Comment, User, tags
+from webapp.models import db, Post, Comment, User
 from webapp.extensions import oid
 from flask.ext.login import login_user, logout_user
 from flask.ext.login import login_required
