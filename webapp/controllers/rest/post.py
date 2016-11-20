@@ -4,7 +4,8 @@ from flask import abort
 from flask.ext.restful import Resource, fields, marshal_with
 from webapp.models import Post, db, User, Tag
 from .fields import HTMLField
-from .parsers import post_get_parser
+from .parsers import post_get_parser, post_post_parser
+import datetime
 
 nested_tag_fields = {
     'id': fields.Integer(),
@@ -44,6 +45,37 @@ class PostApi(Resource):
             else:
                 posts = Post.query.order_by(
                     Post.publish_date.desc()
-                ).paginate(page, 2)
+                ).paginate(page, 10)
 
             return posts.items
+
+    def post(self, post_id=None):
+        if post_id:
+            abort(405)
+
+        else:
+            args = post_post_parser.parse_args(strict=True)
+
+            user = User.verify_auth_token(args['token'])
+            if not user:
+                abort(401)
+
+            new_post = Post(args['title'])
+            new_post.user_id = user.id
+            new_post.publish_date = datetime.datetime.now()
+            new_post.text = args['text']
+
+            if args['tags']:
+                for item in args['tags']:
+                    tag = Tag.query.filter_by(title=item).first()
+                    ##如果存在该标签,就添加
+                    ##如果不存在,就先创建再添加
+                    if tag:
+                        new_post.tags.append(tag)
+                    else:
+                        new_tag = Tag(item)
+                        new_post.tags = tag.append(new_tag)
+
+            db.session.add(new_post)
+            db.session.commit()
+            return new_post.id, 201
