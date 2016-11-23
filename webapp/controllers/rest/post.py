@@ -4,7 +4,12 @@ from flask import abort
 from flask.ext.restful import Resource, fields, marshal_with
 from webapp.models import Post, db, User, Tag
 from .fields import HTMLField
-from .parsers import post_get_parser, post_post_parser
+from .parsers import (
+    post_get_parser,
+    post_post_parser,
+    post_put_parser,
+    post_delete_parser
+)
 import datetime
 
 nested_tag_fields = {
@@ -51,7 +56,7 @@ class PostApi(Resource):
 
     def post(self, post_id=None):
         if post_id:
-            abort(405)
+            abort(400)
 
         else:
             args = post_post_parser.parse_args(strict=True)
@@ -74,8 +79,60 @@ class PostApi(Resource):
                         new_post.tags.append(tag)
                     else:
                         new_tag = Tag(item)
-                        new_post.tags = tag.append(new_tag)
+                        new_post.tags.append(new_tag)
 
             db.session.add(new_post)
             db.session.commit()
             return new_post.id, 201
+
+    def put(self, post_id=None):
+        if not post_id:
+            abort(400)
+
+        post = Post.query.get(post_id)
+        if not post:
+            abort(404)
+
+        args = post_put_parser.parse_args(strict=True)
+        user = User.verify_auth_token(args['token'])
+        if not user:
+            abort(401)
+        if user != post.user:
+            abort(403)
+
+        if args['title']:
+            post.title = args['title']
+
+        if args['text']:
+            post.text = args['text']
+
+        if args['tags']:
+            for item in args['tags']:
+                tag = Tag.query.filter_by(title=item).first()
+
+                if tag:
+                    post.tags.append(tag)
+                else:
+                    new_tag = Tag(item)
+                    post.tags.append(new_tag)
+
+        db.session.add(post)
+        db.session.commit()
+        return post.id, 201
+
+    def delete(self, post_id=None):
+        if not post_id:
+            abort(400)
+
+        post = Post.query.get(post_id)
+        if not post:
+            abort(404)
+
+        args = post_delete_parser.parse_args(strict=True)
+        user = User.verify_auth_token(args['token'])
+        if user != post.user:
+            abort(403)
+
+        db.session.delete(post)
+        db.session.commit()
+        return "", 204

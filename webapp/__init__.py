@@ -23,8 +23,8 @@ def create_app(object_name):
     oid.init_app(app)
     login_manager.init_app(app)
     principals.init_app(app)
-    rest_api.add_resource(PostApi, '/api/post', '/api/post/<int:post_id>')
-    rest_api.add_resource(AuthApi, '/api/auth', endpoint='api')
+    rest_api.add_resource(PostApi, '/api/post', '/api/post/<int:post_id>',)
+    rest_api.add_resource(AuthApi, '/api/auth',)
     rest_api.init_app(app)
 
     @identity_loaded.connect_via(app)
