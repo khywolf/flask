@@ -6,12 +6,14 @@ from flask.ext.openid import OpenID
 from flask.ext.login import LoginManager
 from flask.ext.restful import Api
 from flask.ext.principal import Principal, Permission, RoleNeed
+from flask.ext.celery import Celery
 
 bcrypt = Bcrypt()
 oid = OpenID()
 login_manager = LoginManager()
 principals = Principal()
 rest_api = Api()
+celery = Celery()
 
 admin_permission = Permission(RoleNeed('admin'))
 poster_permission = Permission(RoleNeed('poster'))

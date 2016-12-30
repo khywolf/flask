@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
+import datetime
 
 class Config(object):
     SECRET_KEY = 'key here'
@@ -18,4 +19,13 @@ class DevConfig(Config):
         'db': 'local',
         'host': '172.16.1.129',
         'port': 27017
+    }
+    CELERY_BROKER_URL = "redis://172.16.1.129:6379/0"
+    CELERY_RESULT_BACKEND = "redis://172.16.1.129:6379/1"
+    CELERYBEAT_SCHEDULE = {
+        'log-every-5-seconds': {
+            'task': 'webapp.tasks.log',
+            'schedule': datetime.timedelta(seconds=5),
+            'args': ("Message schedule",)
+        },
     }
