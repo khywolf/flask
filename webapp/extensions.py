@@ -7,6 +7,7 @@ from flask.ext.login import LoginManager
 from flask.ext.restful import Api
 from flask.ext.principal import Principal, Permission, RoleNeed
 from flask.ext.celery import Celery
+from flask.ext.admin import Admin
 
 bcrypt = Bcrypt()
 oid = OpenID()
@@ -14,6 +15,7 @@ login_manager = LoginManager()
 principals = Principal()
 rest_api = Api()
 celery = Celery()
+admin = Admin()
 
 admin_permission = Permission(RoleNeed('admin'))
 poster_permission = Permission(RoleNeed('poster'))

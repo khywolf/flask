@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 import datetime
+from celery.schedules import crontab
 
 class Config(object):
     SECRET_KEY = 'key here'
@@ -27,5 +28,9 @@ class DevConfig(Config):
             'task': 'webapp.tasks.log',
             'schedule': datetime.timedelta(seconds=5),
             'args': ("Message schedule",)
+        },
+        'weekly-digest': {
+            'task': 'tasks.digest',
+            'schedule': crontab(day_of_week=6, hour='10')
         },
     }
